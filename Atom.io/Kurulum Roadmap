@@ -1,0 +1,57 @@
+---distributor
+INSERT INTO public.distributor
+(enabled, is_deleted, create_date, update_date, code, ip_address, logical_ref, "name", order_prefix, tax_number, tax_office, transfer_order_ip_address,
+powerbikey, max_order_line, delivery_date, branch_status, is_interact_with_erp, distributor_type, parent_id, integration_ip_address, integration_type, phone,
+fax, email, website, logo_path, manager_id, max_invoice_amount, min_invoice_amount, approval_date, last_create_billing_date, max_invoice_detail_line)
+VALUES(true, false, 'now', NULL , '006', '', 6, 'DOĞU KARADENİZ', 'BK', '', '', '', '', 150, 2, false, false, 'DISTRIBUTOR', 8, NULL, NULL, NULL, NULL,
+NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+---application parameters
+INSERT INTO public.application_parameters
+(enabled, is_deleted, create_date, update_date, distributor_id, parameter_is_global, parameter_key, parameter_type, parameter_value, root_start_date)
+VALUES( true, false, 'now', NULL, 86, false, 'DISTRIBUTOR_SALESMAN_MAX_LOGIN', 'NUMBER', '98', '2021-01-03');
+​
+---users
+INSERT INTO public.users
+(enabled, is_deleted, create_date, update_date, first_name, last_name, email, "password", code, special_code, max_token_count, last_successfully_login_date,
+last_successfully_login_ip, last_failed_login_date, last_failed_login_ip, consecutive_failed_login_attempt_count, image_file_path, image_file_name, phone,
+about, latitude, longitude, current_latitude, current_longitude, remote_ref, one_signal_user_id, user_type, user_defined_type_id, parent_id, distributor_id)
+VALUES(true, false, 'now', NULL, 'OPERASYON', 'YALIN ERZURUM', 'operasyon@yalinerzurum.com', '$2a$10$BIKHdlYgYyVSBt2mb/QRMO5oolnLmdAqo6f1EI8L1YU0o1g8dV/se',
+'sArt', NULL, 999, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, 0.0, 0.0, NULL, NULL, NULL, NULL, 'MANAGER', NULL, NULL, 86);
+
+---user_permission
+​INSERT INTO public.user_permission
+(user_id, permission_id, excluded)
+SELECT 991,usp.permission_id, usp.excluded FROM user_permission usp WHERE usp.user_id=575;
+​
+---SALESMAN customized_group
+INSERT INTO public.customized_group
+( enabled, is_deleted, create_date, update_date, code, description, filtered_object_data, group_type, "name", distributor_id)
+VALUES( true, false, 'NOW', NULL, 'DOGU KARADENIZ', NULL,
+'{"type": "salesman", "managerId": null, "salesmanCodes": [""]}', 'SALESMAN', 'DOGU KARADENIZ', 86);
+​
+---CUSTOMER_TYPE​
+INSERT INTO public.customer_type
+(enabled, is_deleted, create_date, update_date, code, logical_ref, "name", distributor_id)
+VALUES(true, false, 'NOW', NULL, '2', 2, 'Satış', 85);
+INSERT INTO public.customer_type
+(enabled, is_deleted, create_date, update_date, code, logical_ref, "name", distributor_id)
+VALUES(true, false, 'NOW', NULL, '3', 3, 'Alış-Satış', 86);
+INSERT INTO public.customer_type
+(enabled, is_deleted, create_date, update_date, code, logical_ref, "name", distributor_id)
+VALUES(true, false, 'NOW', NULL, '1', 1, 'Alış', 86);
+
+--payment_type
+INSERT INTO public.customer_payment_type(enabled, is_deleted, customer_id, is_default, payment_type_id)
+select true, false, c.id, false, pt.id
+from customer c, payment_type pt
+where pt.id in (196, 197) and c.id in (68480,66864,66847,66865,66866,66867)
+
+--distributor ayağa kalktıktan sonra yapılması gereken işlemler
+--belge numaraları oluşturulmalı
+SELECT add_all_numerator_strategy (90,TRUE);
+SELECT add_all_numerator_strategy (90,FALSE);
+
+--Stoklar oluşturulmalı
+SELECT add_all_products_to_warehouse (90,9,152);
+SELECT add_all_products_to_warehouse (90,9,153);
